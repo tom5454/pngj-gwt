@@ -9,16 +9,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import com.jcraft.jzlib.DeflaterOutputStream;
+import com.jcraft.jzlib.InflaterInputStream;
+
 import java.util.regex.Pattern;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
 
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
-import ar.com.hjg.pngj.PngjInputException;
 
 /**
  * Helper methods and constants related to Chunk processing.
@@ -204,7 +204,7 @@ public class ChunkHelper {
 	 * See also trimList()
 	 */
 	public static List<PngChunk> filterList(List<PngChunk> target, ChunkPredicate predicateKeep) {
-		List<PngChunk> result = new ArrayList<PngChunk>();
+		List<PngChunk> result = new ArrayList<>();
 		for (PngChunk element : target) {
 			if (predicateKeep.match(element)) {
 				result.add(element);

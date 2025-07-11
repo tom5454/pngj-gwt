@@ -4,7 +4,9 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkPredicate;
@@ -60,7 +62,7 @@ public class PngWriter implements Closeable {
 
 	protected StringBuilder debuginfo = new StringBuilder();
 
-	private static final Logger LOGGER = Logger.getLogger(PngWriter.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(PngWriter.class.getName());
 
 	/**
 	 * Opens a file for writing.
@@ -252,10 +254,8 @@ public class PngWriter implements Closeable {
 	 * @see #copyChunksFrom(ChunksList, int) for more info
 	 */
 	public void copyChunksFrom(ChunksList chunks, ChunkPredicate predicate) {
-		if (copyFromList != null && chunks != null)
-			LOGGER.warning("copyChunksFrom should only be called once");
-		if (predicate == null)
-			throw new PngjOutputException("copyChunksFrom requires a predicate");
+		if (copyFromList != null && chunks != null) LOGGER.warn("copyChunksFrom should only be called once");
+		if (predicate == null) throw new PngjOutputException("copyChunksFrom requires a predicate");
 		this.copyFromList = chunks;
 		this.copyFromPredicate = predicate;
 	}
@@ -303,14 +303,12 @@ public class PngWriter implements Closeable {
 	 * Idempotent and secure - never throws exceptions
 	 */
 	public void close() {
-		if (pixelsWriter != null)
-			pixelsWriter.close();
-		if (shouldCloseStream && os != null)
-			try {
-				os.close();
-			} catch (Exception e) {
-				LOGGER.warning("Error closing writer " + e.toString());
-			}
+		if (pixelsWriter != null) pixelsWriter.close();
+		if (shouldCloseStream && os != null) try {
+			os.close();
+		} catch (Exception e) {
+			LOGGER.warn("Error closing writer " + e.toString());
+		}
 	}
 
 	/**

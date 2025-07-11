@@ -2,12 +2,15 @@ package ar.com.hjg.pngj;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Some utility static methods for internal use.
@@ -17,7 +20,7 @@ import java.util.logging.Logger;
  */
 public final class PngHelperInternal {
 
-	private static final Logger LOGGER = Logger.getLogger(PngHelperInternal.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(PngHelperInternal.class.getName());
 
 	/**
 	 * Default charset, used internally by PNG for several things
@@ -27,12 +30,6 @@ public final class PngHelperInternal {
 	 * UTF-8 is only used for some chunks
 	 */
 	public static Charset charsetUTF8 = StandardCharsets.UTF_8;
-
-	private static ThreadLocal<Boolean> DEBUG = new ThreadLocal<Boolean>() {
-		protected Boolean initialValue() {
-			return Boolean.FALSE;
-		}
-	};
 
 	/**
 	 * PNG magic bytes
@@ -284,13 +281,10 @@ public final class PngHelperInternal {
 	}
 
 	static OutputStream ostreamFromFile(File f, boolean allowoverwrite) {
-		// In old versions of GAE (Google App Engine) this could trigger
-		// issues because java.io.FileOutputStream was not whitelisted.
-		java.io.FileOutputStream os = null;
-		if (f.exists() && !allowoverwrite)
-			throw new PngjOutputException("File already exists: " + f);
+		OutputStream os = null;
+		if (f.exists() && !allowoverwrite) throw new PngjOutputException("File already exists: " + f);
 		try {
-			os = new java.io.FileOutputStream(f);
+			os = new FileOutputStream(f);
 		} catch (Exception e) {
 			throw new PngjInputException("Could not open for write" + f, e);
 		}
@@ -321,11 +315,10 @@ public final class PngHelperInternal {
 	 * Sets a global debug flag. This is bound to a thread.
 	 */
 	public static void setDebug(boolean b) {
-		DEBUG.set(b);
 	}
 
 	public static boolean isDebug() {
-		return DEBUG.get().booleanValue();
+		return false;
 	}
 
 	public static long getDigest(PngReader pngr) {

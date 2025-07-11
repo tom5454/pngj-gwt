@@ -6,8 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ar.com.hjg.pngj.ChunkReader.ChunkReaderMode;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
@@ -20,7 +21,7 @@ import ar.com.hjg.pngj.chunks.ChunkHelper;
  * idat deflate
  */
 public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
-	private static final Logger LOGGER = Logger.getLogger(ChunkSeqReader.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChunkSeqReader.class.getName());
 
 	private final byte[] expectedSignature;
 	private final int signatureLength;
@@ -175,8 +176,7 @@ public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
 	 * {@link #createChunkReaderForNewChunk(String, int, long, boolean)}
 	 */
 	protected void startNewChunk(int len, String id, long offset) {
-		if (LOGGER.isLoggable(Level.FINE))
-			LOGGER.fine("New chunk: " + id + " " + len + " off:" + offset);
+		if (LOGGER.isDebugEnabled()) LOGGER.debug("New chunk: " + id + " " + len + " off:" + offset);
 		// check id an length
 		if (id.length() != 4 || !ChunkHelper.CHUNK_ID_PAT.matcher(id).matches())
 			throw new PngjInputException("Bad chunk id: " + id);
@@ -263,10 +263,8 @@ public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
 			String cid = firstChunkId();
 			if (cid != null && !cid.equals(chunkR.getChunkRaw().id)) {
 				String msg = "Bad first chunk: " + chunkR.getChunkRaw().id + " expected: " + firstChunkId();
-				if (errorBehaviour.c < ErrorBehaviour.SUPER_LENIENT.c)
-					throw new PngjInputException(msg);
-				else
-					LOGGER.warning(msg);
+				if (errorBehaviour.c < ErrorBehaviour.SUPER_LENIENT.c) throw new PngjInputException(msg);
+				else LOGGER.warn(msg);
 			}
 		}
 		if (endChunkId() != null && chunkR.getChunkRaw().id.equals(endChunkId())) {

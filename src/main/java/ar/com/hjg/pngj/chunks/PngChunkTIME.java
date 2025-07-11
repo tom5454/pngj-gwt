@@ -1,6 +1,6 @@
 package ar.com.hjg.pngj.chunks;
 
-import java.util.Calendar;
+import java.util.Date;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
@@ -50,15 +50,15 @@ public class PngChunkTIME extends PngChunkSingle {
 		sec = PngHelperInternal.readInt1fromByte(chunk.data, 6);
 	}
 
+	@SuppressWarnings("deprecation") // GWT doesn't support calendar
 	public void setNow(int secsAgo) {
-		Calendar d = Calendar.getInstance();
-		d.setTimeInMillis(System.currentTimeMillis() - 1000 * (long) secsAgo);
-		year = d.get(Calendar.YEAR);
-		mon = d.get(Calendar.MONTH) + 1;
-		day = d.get(Calendar.DAY_OF_MONTH);
-		hour = d.get(Calendar.HOUR_OF_DAY);
-		min = d.get(Calendar.MINUTE);
-		sec = d.get(Calendar.SECOND);
+		Date d = new Date(System.currentTimeMillis() - 1000 * (long) secsAgo);
+		year = d.getYear();
+		mon = d.getMonth() + 1;
+		day = d.getDay();
+		hour = d.getHours();
+		min = d.getMinutes();
+		sec = d.getSeconds();
 	}
 
 	public void setYMDHMS(int yearx, int monx, int dayx, int hourx, int minx, int secx) {

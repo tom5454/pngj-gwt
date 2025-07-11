@@ -1,6 +1,7 @@
 package ar.com.hjg.pngj;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
@@ -20,7 +21,7 @@ import ar.com.hjg.pngj.chunks.ChunkRaw;
  * (usually is) long lived.
  */
 public abstract class ChunkReader implements IBytesConsumer {
-	private static final Logger LOGGER = Logger.getLogger(ChunkReader.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChunkReader.class.getName());
 
 	/**
 	 * see {@link ChunkReaderMode}
@@ -149,7 +150,7 @@ public abstract class ChunkReader implements IBytesConsumer {
 						}
 						chunkRaw.checkCrc(errorBehav == ErrorBehaviour.STRICT);
 					}
-					LOGGER.fine("Chunk done");
+					LOGGER.debug("Chunk done");
 					chunkDone();
 				}
 			}

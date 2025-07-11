@@ -3,9 +3,11 @@ package ar.com.hjg.pngj;
 import java.io.Closeable;
 import java.io.File;
 import java.io.InputStream;
-import java.util.logging.Logger;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 import ar.com.hjg.pngj.chunks.ChunksList;
@@ -50,7 +52,7 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * samples).
  */
 public class PngReader implements Closeable {
-	private static final Logger LOGGER = Logger.getLogger(PngReader.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(PngReader.class.getName());
 
 	// some performance/defensive limits
 	/**
@@ -351,11 +353,9 @@ public class PngReader implements Closeable {
 	 *            step between rows to load( default:1)
 	 */
 	public IImageLineSet<? extends IImageLine> readRows(int nRows, int rowOffset, int rowStep) {
-		if (chunkseq.firstChunksNotYetRead())
-			readFirstChunks();
-		if (nRows < 0)
-			nRows = (getCurImgInfo().rows - rowOffset) / rowStep;
-		if (rowStep < 1 || rowOffset < 0 || nRows == 0 || nRows * rowStep + rowOffset > getCurImgInfo().rows)
+		if (chunkseq.firstChunksNotYetRead()) readFirstChunks();
+		if (nRows < 0) nRows = (getCurImgInfo().rows - rowOffset) / rowStep;
+		if (rowStep < 1 || rowOffset < 0 || nRows == 0 || (nRows - 1) * rowStep + 1 + rowOffset > getCurImgInfo().rows)
 			throw new PngjInputException("bad args");
 		if (rowNum >= rowOffset)
 			throw new PngjInputException("readRows cannot be mixed with readRow");
@@ -544,7 +544,7 @@ public class PngReader implements Closeable {
 			if (chunkseq != null)
 				chunkseq.close();
 		} catch (Exception e) {
-			LOGGER.warning("error closing chunk sequence:" + e.getMessage());
+			LOGGER.warn("error closing chunk sequence:" + e.getMessage());
 		}
 		if (streamFeeder != null)
 			streamFeeder.close();
