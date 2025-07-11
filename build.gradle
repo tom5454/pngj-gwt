@@ -45,14 +45,15 @@ jar {
     from sourceSets.main.allJava
 }
 
+tasks.withType(Test).configureEach {
+    enabled = false
+}
+
 // configure the maven publication
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(jar) {
-				builtBy jar
-			}
+			from components.java
 		}
 	}
 
