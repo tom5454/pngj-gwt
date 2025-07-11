@@ -8,3 +8,7 @@ build/
 .classes/
 priv/
 notingit/
+/bin/
+codes
+.gradle
+local.properties
